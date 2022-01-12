@@ -1,0 +1,40 @@
+<?php
+
+use Drupal\commerce_epos\Plugin\Commerce\PaymentGateway\Epos;
+use esas\cmsgate\CmsConnectorDrupal;
+use esas\cmsgate\epos\controllers\ControllerEposCompletionPage;
+use esas\cmsgate\Registry;
+
+define('EPOS_MODULE_ID', 'commerce_epos');
+
+
+function commerce_epos_theme($existing, $type, $theme, $path)
+{
+    $theme_path = \Drupal::service('extension.list.module')->getPath(EPOS_MODULE_ID) . '/templates';
+    return array(
+        'commerce_epos_checkout_completion_form' => array(
+            'variables' => array(
+                'completionPanel' => NULL,),
+            'template' => 'commerce-epos-checkout-completion-form',
+            'path' => $theme_path,
+        )
+    );
+}
+
+function commerce_epos_preprocess_commerce_epos_checkout_completion_form(&$variables)
+{
+    $orderWrapper = Registry::getRegistry()->getOrderWrapperForCurrentUser();
+    $controller = new ControllerEposCompletionPage();
+    $completionPanel = $controller->process($orderWrapper);
+    $variables['completionPanel'] = $completionPanel;
+}
+
+function commerce_epos_theme_suggestions_form_alter(array &$suggestions, array $variables)
+{
+    if ($variables['element']['#step_id'] == "complete") { // может быть есть какой-то более удачный вариант проверки?
+        $order = CmsConnectorDrupal::getInstance()->getDrupalOrderFromSession();
+        if ($order->get('payment_gateway')->entity->getPlugin() instanceof Epos) {
+            $suggestions[] = 'commerce_epos_checkout_completion_form';
+        }
+    }
+}

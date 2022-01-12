@@ -1,0 +1,6 @@
+commerce_epos.callback:
+  path: '/commerce_epos/callback'
+  defaults:
+      _controller: '\Drupal\commerce_epos\Controller\EposController::callback'
+  requirements:
+      _access: 'TRUE'

@@ -1,0 +1,11 @@
+name: 'Commerce EPOS (ERIP Belarus)'
+type: module
+description: 'Implements EPOS payment gateway for commerce.'
+package: Commerce
+hidden: false
+dependencies:
+  - commerce:commerce_payment
+  - core:telephone
+version: '9.x-1.0'
+project: 'commerce_epos'
+datestamp: 1499960649
